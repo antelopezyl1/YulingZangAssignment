@@ -1,0 +1,57 @@
+---
+- name: Deploy Apache on 8080
+  hosts: webservers
+  become: true
+
+  vars:
+    docroot: /var/www/sjsu
+    site_name: sjsu
+
+  handlers:
+    - name: reload apache2
+      service:
+        name: apache2
+        state: reloaded
+
+  tasks:
+    - name: Install Apache 
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Ensure docroot exists
+      file:
+        path: "{{ docroot }}"
+        state: directory
+        mode: '0755'
+
+    - name: Write index.html with SJSU-X
+      copy:
+        dest: "{{ docroot }}/index.html"
+        mode: '0644'
+        content: "<h1>Hello World from SJSU-{{ sjsu_id }}</h1>\n"
+
+    - name: Ensure 'Listen 8080' in ports.conf
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen 8080$'
+        line: 'Listen 8080'
+        insertafter: '^#?Listen 80'
+      notify: reload apache2
+
+    - name: Add vhost on 8080
+      copy:
+        dest: /etc/apache2/sites-available/{{ site_name }}.conf
+        mode: '0644'
+        content: |
+          <VirtualHost *:8080>
+              DocumentRoot {{ docroot }}
+          </VirtualHost>
+      notify: reload apache2
+
+    - name: Enable site
+      command: a2ensite {{ site_name }}
+      args:
+        creates: /etc/apache2/sites-enabled/{{ site_name }}.conf
+      notify: reload apache2

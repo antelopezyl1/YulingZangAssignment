@@ -1,0 +1,17 @@
+# Terraform local artifacts
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+.terraform.tfstate.lock.info
+
+# Ansible
+*.retry
+
+# OS
+.DS_Store
+
+# Secrets
+*.pem
+*.key

@@ -1,0 +1,44 @@
+---
+- name: Undeploy Apache on 8080
+  hosts: webservers
+  become: true
+
+  vars:
+    docroot: /var/www/sjsu
+    site_name: sjsu
+
+  handlers:
+    - name: reload apache2
+      service:
+        name: apache2
+        state: reloaded
+
+  tasks:
+    - name: Disable site
+      command: a2dissite {{ site_name }}
+      args:
+        removes: /etc/apache2/sites-enabled/{{ site_name }}.conf
+      notify: reload apache2
+
+    - name: Remove vhost file
+      file:
+        path: /etc/apache2/sites-available/{{ site_name }}.conf
+        state: absent
+
+    - name: Remove index.html 
+      file:
+        path: "{{ docroot }}/index.html"
+        state: absent
+
+    - name: Remove 'Listen 8080' in ports.conf
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen 8080$'
+        state: absent
+      notify: reload apache2
+
+    
+
+   
+
+    
