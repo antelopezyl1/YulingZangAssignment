@@ -5,7 +5,7 @@ pipeline {
     PATH = "/usr/local/bin:/opt/homebrew/bin:/Applications/Docker.app/Contents/Resources/bin:${env.PATH}"
   }
   tools {
-    dockerTool 'docker-local'   // 使用你在 UI 里命名的 Docker 安装
+    dockerTool 'Docker_local'   // 使用你在 UI 里命名的 Docker 安装
   }
   stages {
     stage('build') {
