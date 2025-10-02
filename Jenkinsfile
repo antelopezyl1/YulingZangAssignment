@@ -1,7 +1,7 @@
 
 /* Requires the Docker Pipeline plugin */
 pipeline {
-    agent { docker docker { 
+    agent { docker { 
             image 'python:3.13.7-alpine3.22'
             // 添加 customLauncher 明确指定 Docker 可执行文件的位置
             customLauncher '/opt/homebrew/bin/docker' 
